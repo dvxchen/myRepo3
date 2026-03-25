@@ -36,6 +36,7 @@ jobs:
           browser: chrome
         env:
           CI: true
+          CYPRESS_CASENAME: ${{ inputs.casename }}
 
       # ==============================================
       # 自动发送测试结果到 Slack（成功/失败都会发）
