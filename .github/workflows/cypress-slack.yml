@@ -1,0 +1,48 @@
+name: Cypress E2E + Slack Notify
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  cypress-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 使用 Node.js 环境
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # 关键修复：用 npm install 代替 npm ci，彻底解决 lockfile 报错
+      - name: Install dependencies
+        run: npm install
+
+      # 运行 Cypress 测试
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+        env:
+          CI: true
+
+      # ==============================================
+      # 自动发送测试结果到 Slack（成功/失败都会发）
+      # ==============================================
+      - name: Send result to Slack
+        if: always()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "🧪 Cypress 自动化测试完成\n\n📦 项目：${{ github.repository }}\n👤 操作者：${{ github.actor }}\n✅ 状态：${{ job.status }}\n🔗 查看日志：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
