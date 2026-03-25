@@ -1,0 +1,21 @@
+{
+  "name": "gitaction",
+  "version": "1.0.0",
+  "description": "Cypress 测试 + 邮件通知",
+  "main": "index.js",
+  "scripts": {
+    "test": "cypress run --reporter json --reporter-options output=./cypress/results/json/cypress-results.json",
+    "report:merge": "mochawesome-merge ./cypress/results/json/*.json > ./cypress/results/html/merged-report.json",
+    "report:generate": "marge ./cypress/results/html/merged-report.json -o ./cypress/results/html"
+  },
+  "devDependencies": {
+    "cypress": "^13.6.0",
+    "mochawesome": "^7.1.3",
+    "mochawesome-merge": "^4.3.0",
+    "mochawesome-report-generator": "^6.2.0",
+    "nodemailer": "^6.9.8"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,13 @@
+{
+  "reporterEnabled": "mochawesome, mocha-junit-reporter",
+  "mochawesomeReporterOptions": {
+    "reportDir": "./cypress/results/json", // JSON 报告保存路径
+    "overwrite": false, // 不覆盖旧报告
+    "html": false, // 单独生成 HTML 报告（下面配置）
+    "json": true // 生成 JSON 报告
+  },
+  "mochaJunitReporterReporterOptions": {
+    "mochaFile": "./cypress/results/xml/results-[hash].xml", // XML 报告保存路径
+    "toConsole": false // 不输出到控制台
+  }
+}
