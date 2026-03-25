@@ -49,7 +49,7 @@ jobs:
           server_port: 465
           username: ${{ secrets.EMAIL_USER }}
           password: ${{ secrets.EMAIL_PASS }}
-          subject: Cypress 自动化测试结果
+          subject: ：）Cypress 自动化测试结果，全部通过
           body: |
             测试完成！
             运行用例：${{ inputs.casename }}
