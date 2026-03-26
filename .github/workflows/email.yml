@@ -14,6 +14,7 @@ jobs:
           EMAIL=$(gh api users/${{ github.actor }} --jq '.email')
           echo "user_email=$EMAIL" >> $GITHUB_OUTPUT
           echo $GITHUB_OUTPUT
+          echo $EMAIL
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
