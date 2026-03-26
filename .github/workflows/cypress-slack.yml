@@ -1,4 +1,4 @@
-name: Cypress E2E + Slack Notify
+itname: Cypress E2E + Slack Notify
 env:
   EMAIL_TO1: "${{ github.actor }}"
   FIXED_USER1: "${$EMAIL_TO1//AT/.}.sap.com"
@@ -62,7 +62,7 @@ jobs:
             测试完成！
             运行用例：${{ inputs.casename }}
             运行状态：${{ job.status }}
-          to: ${{ env.FIXED_USER1 }}   #$FIXED_USER
+          to: ${{ github.event.sender.email }}   #$FIXED_USER
           from: GitHub Actions
 
       # ==============================================
