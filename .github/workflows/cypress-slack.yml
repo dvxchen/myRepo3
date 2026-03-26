@@ -65,7 +65,7 @@ jobs:
             测试完成！
             运行用例：${{ inputs.casename }}
             运行状态：${{ job.status }}
-          to: $EMAIL
+          to: ${{ env.EMAIL_TO1 }}
           from: GitHub Actions
 
       # ==============================================
