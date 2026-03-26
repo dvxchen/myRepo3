@@ -1,8 +1,6 @@
 name: Cypress E2E + Slack Notify
 env:
-  EMAIL_TO1: ${{ github.event.sender.email }}
-  FIXED_USER1: "${$EMAIL_TO1//AT/.}.sap.com"
-  GITHUB_ENV: "AAA"
+  email: "AAAA"
 on:
   push:
     branches: [ main ]
@@ -45,10 +43,10 @@ jobs:
         id: get-email
         run: |
           # 获取触发者邮箱
-          EMAIL_TO1=$(gh api users/${{ github.actor }} --jq '.email')
-          echo "user_email=$EMAIL" >> $GITHUB_OUTPUT
-          echo $GITHUB_OUTPUT
-          echo $EMAIL_TO1
+          email=$(gh api users/${{ github.actor }} --jq '.email')
+          echo $email
+          echo "email=$email" >> $GITHUB_ENV
+          echo ${{ env.email }}
       # =============================================
       # ✅ 修复：无论成功失败都发邮件
       # =============================================
@@ -65,7 +63,7 @@ jobs:
             测试完成！
             运行用例：${{ inputs.casename }}
             运行状态：${{ job.status }}
-          to: ${{ env.EMAIL_TO1 }}
+          to: ${{ env.email }}
           from: GitHub Actions
 
       # ==============================================
