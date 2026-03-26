@@ -39,6 +39,43 @@ jobs:
           CI: true
           CYPRESS_CASENAME: ${{ inputs.casename }}
 
+ # ==================== 日志输出 + 统计 ====================
+      - name: 生成 Cypress 报告与日志
+        if: always()
+        run: |
+          # 生成 JSON 报告（统计用）
+          npx cypress run --reporter json > cypress-report.json 2>&1 || true
+          # 输出日志到控制台
+          cat cypress-report.json
+
+      # ==================== 解析成功/失败/跳过 ====================
+      - name: 解析测试统计
+        if: always()
+        id: parse
+        run: |
+          PASSED=$(jq '.stats.passed // 0' cypress-report.json)
+          FAILED=$(jq '.stats.failed // 0' cypress-report.json)
+          SKIPPED=$(jq '.stats.skipped // 0' cypress-report.json)
+          TOTAL=$(jq '.stats.tests // 0' cypress-report.json)
+          STATUS=$([ "$FAILED" -gt 0 ] && echo "失败" || echo "成功")
+
+          # 处理用户名 davyATchen → davy.chen
+          USER=${{ github.actor }}
+          SAFE_USER=${USER//AT/.}
+
+          # 日志后50行
+          LOG=$(tail -n 60 cypress-report.json | tr -d '"')
+          LOG="${LOG//$'\n'/'%0A'}"
+
+          # 写入环境变量
+          echo "PASSED=$PASSED" >> $GITHUB_ENV
+          echo "FAILED=$FAILED" >> $GITHUB_ENV
+          echo "SKIPPED=$SKIPPED" >> $GITHUB_ENV
+          echo "TOTAL=$TOTAL" >> $GITHUB_ENV
+          echo "STATUS=$STATUS" >> $GITHUB_ENV
+          echo "SAFE_USER=$SAFE_USER" >> $GITHUB_ENV
+          echo "LOG=$LOG" >> $GITHUB_ENV
+
       - name: 获取当前用户的邮箱
         id: get-email
         run: |
@@ -60,13 +97,21 @@ jobs:
           server_port: 465
           username: ${{ secrets.EMAIL_USER }}
           password: ${{ secrets.EMAIL_PASS }}
-          subject: ：）Cypress 自动化测试结果，全部通过
+          subject: "Cypress ${{ env.STATUS }} | ${{ env.SAFE_USER }}"
           body: |
-            测试完成！
-            运行用例：${{ inputs.casename }}
-            运行状态：${{ job.status }}
-          to: ${{ env.email }}
+            👤 操作人：${{ env.SAFE_USER }}
+            📦 仓库：${{ github.repository }}
+            🌍 浏览器：Chrome
+
+            ✅ 成功：${{ env.PASSED }}
+            ❌ 失败：${{ env.FAILED }}
+            ⏭️ 跳过：${{ env.SKIPPED }}
+            📊 总计：${{ env.TOTAL }}
+
+            📝 日志：
+            ${{ env.LOG }}
           from: GitHub Actions
+          to: ${{ env.email }}
 
       # ==============================================
       # 自动发送测试结果到 Slack（成功/失败都会发）
