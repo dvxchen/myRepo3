@@ -48,18 +48,7 @@ jobs:
           # 输出日志到控制台
           cat cypress-report.json
 
-# ==================== 解析成功/失败/跳过 ====================
-      - name: 解析测试统计
-        if: always()
-        id: parse
-        run: |
-          PASSED=$(jq '.stats.passed // 0' cypress-report.json)
-          FAILED=$(jq '.stats.failed // 0' cypress-report.json)
-          SKIPPED=$(jq '.stats.skipped // 0' cypress-report.json)
-          TOTAL=$(jq '.stats.tests // 0' cypress-report.json)
-          STATUS=$([ "$FAILED" -gt 0 ] && echo "失败" || echo "成功")
-
-          
+ 
       - name: 获取当前用户的邮箱
         id: get-email
         run: |
