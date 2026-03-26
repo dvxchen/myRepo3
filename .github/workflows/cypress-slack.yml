@@ -53,8 +53,8 @@ jobs:
         if: always()
         id: parse
         run: |
-          PASSED=$(jq '.stats.passed // 0' cypress-report.json)
-
+          PASSED=$(jq -r '.stats.passed // 0' test-results.json 2>/dev/null || echo 0)
+          
           # 日志后50行
           LOG=$(tail -n 60 cypress-report.json | tr -d '"')
           LOG="${LOG//$'\n'/'%0A'}"
