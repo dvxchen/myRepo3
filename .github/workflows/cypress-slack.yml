@@ -59,10 +59,6 @@ jobs:
           TOTAL=$(jq -r '.stats.tests // 0' test-results.json 2>/dev/null || echo 0)
           STATUS=$([ "$FAILED" -gt 0 ] && echo "失败" || echo "成功")
 
-          # 错误日志（最后50行）
-          ERROR_LOG=$(tail -n 50 cypress-output.log)
-          ERROR_LOG="${ERROR_LOG//$'\n'/'%0A'}"
-
           # 写入环境变量
          
           echo "STATUS=$STATUS" >> $GITHUB_ENV
@@ -70,10 +66,7 @@ jobs:
           echo "FAILED=$FAILED" >> $GITHUB_ENV
           echo "SKIPPED=$SKIPPED" >> $GITHUB_ENV
           echo "TOTAL=$TOTAL" >> $GITHUB_ENV
-          echo "SAFE_USER=$SAFE_USER" >> $GITHUB_ENV
-          echo "ERROR_LOG=$ERROR_LOG" >> $GITHUB_ENV
-
-          echo $PASSED
+          echo $PASSED $FAILED $SKIPPED $TOTAL
  
       - name: 获取当前用户的邮箱
         id: get-email
