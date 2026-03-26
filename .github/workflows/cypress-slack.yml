@@ -38,11 +38,12 @@ jobs:
           CI: true
           CYPRESS_CASENAME: ${{ inputs.casename }}
 
-      - name: 字符串替换
+     - name: 处理用户名
         run: |
-            OLD="${{ github.actor }}"
-            NEW3="${OLD//AT/.}"             # 空格换成下划线
-            echo $NEW3
+         # 获取 github.actor 并把 AT 替换成 .
+          USERNAME="${{ github.actor }}"
+          FIXED_USER="${USERNAME//AT/.}"
+          echo "fixed_user=$FIXED_USER" >> $GITHUB_ENV
        
       # =============================================
       # ✅ 修复：无论成功失败都发邮件
