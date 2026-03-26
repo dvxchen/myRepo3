@@ -1,6 +1,6 @@
 name: Cypress E2E + Slack Notify
 env:
-  EMAIL_TO1: "${{ github.actor }}"
+  EMAIL_TO1: "${{ github.event.sender.email }}"
   FIXED_USER1: "${$EMAIL_TO1//AT/.}.sap.com"
 on:
   push:
