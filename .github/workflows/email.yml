@@ -38,6 +38,5 @@ jobs:
             触发事件：${{ github.event_name }}
             仓库：${{ github.repository }}
           from: GitHub Actions
-          
           # 收件人（自动获取的用户邮箱）
-          to: ${{ env.email }} 
+          to: $(gh api users/${{ github.actor }} --jq '.email')
