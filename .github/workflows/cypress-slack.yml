@@ -60,7 +60,7 @@ jobs:
             测试完成！
             运行用例：${{ inputs.casename }}
             运行状态：${{ job.status }}
-          to: "${${{ github.actor }}//AT/.}.sap.com"    #${{ secrets.EMAIL_T }}
+          to: $NEW3   #${{ secrets.EMAIL_T }}
           from: GitHub Actions
 
       # ==============================================
