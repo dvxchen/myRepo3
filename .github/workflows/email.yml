@@ -37,4 +37,4 @@ jobs:
             仓库：${{ github.repository }}
           from: GitHub Actions
           # 收件人（自动获取的用户邮箱）
-          to: $(gh api users/${{ github.actor }} --jq '.email')
+          to: $tttt
