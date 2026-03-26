@@ -39,7 +39,7 @@ jobs:
           CYPRESS_CASENAME: ${{ inputs.casename }}
 
       - name: 字符串替换
-          run: |
+        run: |
             OLD="${{ secrets.EMAIL_TO }}"
             NEW3="${OLD//AT/.}"             # 空格换成下划线
             echo $NEW3
