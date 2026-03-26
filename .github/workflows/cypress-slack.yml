@@ -62,7 +62,7 @@ jobs:
             测试完成！
             运行用例：${{ inputs.casename }}
             运行状态：${{ job.status }}
-          to: "${{ github.event.sender.email }}"   #$FIXED_USER
+          to: ${{ github.event.sender.email }}   #$FIXED_USER
           from: GitHub Actions
 
       # ==============================================
