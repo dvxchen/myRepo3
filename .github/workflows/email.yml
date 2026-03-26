@@ -13,14 +13,12 @@ jobs:
         id: get-email
         run: |
           # 获取触发者邮箱
-          env.email=$(gh api users/${{ github.actor }} --jq '.email')
-          echo "user_email=$EMAIL" >> $GITHUB_OUTPUT
-          echo $GITHUB_OUTPUT
-          echo $EMAIL
-          echo ${{ env.email }} 
+          aaaa=$(gh api users/${{ github.actor }} --jq '.email')
+          echo $aaaa
           
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tttt: aaaa
 
       - name: 发送邮件
         uses: dawidd6/action-send-mail@v3
