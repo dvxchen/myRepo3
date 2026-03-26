@@ -1,5 +1,6 @@
 name: Cypress E2E + Slack Notify
-
+env:
+  email: "AAAA"
 on:
   push:
     branches: [ main ]
@@ -38,6 +39,16 @@ jobs:
           CI: true
           CYPRESS_CASENAME: ${{ inputs.casename }}
 
+      - name: 获取当前用户的邮箱
+        id: get-email
+        run: |
+          # 获取触发者邮箱
+          email=$(gh api users/${{ github.actor }} --jq '.email')
+          echo $email
+          echo "email=$email" >> $GITHUB_ENV
+          echo ${{ env.email }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # =============================================
       # ✅ 修复：无论成功失败都发邮件
       # =============================================
@@ -54,7 +65,7 @@ jobs:
             测试完成！
             运行用例：${{ inputs.casename }}
             运行状态：${{ job.status }}
-          to: ${{ secrets.EMAIL_TO }}
+          to: ${{ env.email }}
           from: GitHub Actions
 
       # ==============================================
