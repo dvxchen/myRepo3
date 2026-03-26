@@ -40,4 +40,4 @@ jobs:
           from: GitHub Actions
           
           # 收件人（自动获取的用户邮箱）
-          to: $EMAIL
+          to: ${{ env.email }} 
