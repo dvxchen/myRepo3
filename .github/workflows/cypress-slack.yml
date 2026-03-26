@@ -97,10 +97,15 @@ jobs:
             测试完成！
             运行用例：${{ inputs.casename }}
             运行状态：${{ job.status }}
-            查看日志：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           to: ${{ env.email }}
           from: GitHub Actions
-
+          # 重点：HTML格式 + 可点击链接
+          html_body: |
+            <h3>Cypress 自动化测试执行失败</h3>
+            <p>请点击下方链接查看详细日志：</p>
+            <p><a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">
+            查看 GitHub Actions 运行结果
+            </a></p>
       # ==============================================
       # 自动发送测试结果到 Slack（成功/失败都会发）
       # ==============================================
