@@ -1,7 +1,7 @@
 name: Cypress E2E + Slack Notify
 env:
   EMAIL_TO: "${{ github.actor }}"
-  FIXED_USER: "${EMAIL_TO//AT/.}"
+  FIXED_USER: "${$EMAIL_TO//AT/.}"
 on:
   push:
     branches: [ main ]
