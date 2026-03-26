@@ -38,7 +38,7 @@ jobs:
           CI: true
           CYPRESS_CASENAME: ${{ inputs.casename }}
 
-     - name: 处理用户名
+      - name: 处理用户名
         run: |
          # 获取 github.actor 并把 AT 替换成 .
           USERNAME="${{ github.actor }}"
