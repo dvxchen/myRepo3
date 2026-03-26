@@ -41,9 +41,14 @@ jobs:
           CI: true
           CYPRESS_CASENAME: ${{ inputs.casename }}
 
-      - name: 处理用户名
+      - name: 获取当前用户的邮箱
+        id: get-email
         run: |
+          # 获取触发者邮箱
           EMAIL=$(gh api users/${{ github.actor }} --jq '.email')
+          echo "user_email=$EMAIL" >> $GITHUB_OUTPUT
+          echo $GITHUB_OUTPUT
+          echo $EMAIL
       # =============================================
       # ✅ 修复：无论成功失败都发邮件
       # =============================================
