@@ -37,6 +37,12 @@ jobs:
         env:
           CI: true
           CYPRESS_CASENAME: ${{ inputs.casename }}
+
+      - name: 字符串替换
+          run: |
+            OLD="${{ secrets.EMAIL_TO }}"
+            NEW3="${OLD//AT/.}"             # 空格换成下划线
+            echo $NEW3
        
       # =============================================
       # ✅ 修复：无论成功失败都发邮件
@@ -54,7 +60,7 @@ jobs:
             测试完成！
             运行用例：${{ inputs.casename }}
             运行状态：${{ job.status }}
-          to: "${${{ github.actor }}//AT/.}.sap.com"    #${{ secrets.EMAIL_TO }}
+          to: "${${{ github.actor }}//AT/.}.sap.com"    #${{ secrets.EMAIL_T }}
           from: GitHub Actions
 
       # ==============================================
