@@ -18,7 +18,7 @@ jobs:
           
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          tttt: aaaa
+          tttt: $aaaa
 
       - name: 发送邮件
         uses: dawidd6/action-send-mail@v3
