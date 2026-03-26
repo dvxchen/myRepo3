@@ -1,6 +1,6 @@
 name: 发送邮件通知
 env:
-  email: "AAA"
+  email: "AAAA"
 on:
   push:
   workflow_dispatch: # 允许手动运行
@@ -13,12 +13,12 @@ jobs:
         id: get-email
         run: |
           # 获取触发者邮箱
-          aaaa=$(gh api users/${{ github.actor }} --jq '.email')
-          echo $aaaa
+          email=$(gh api users/${{ github.actor }} --jq '.email')
+          echo $email
           
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          tttt: $aaaa
+     
 
       - name: 发送邮件
         uses: dawidd6/action-send-mail@v3
@@ -37,4 +37,4 @@ jobs:
             仓库：${{ github.repository }}
           from: GitHub Actions
           # 收件人（自动获取的用户邮箱）
-          to: $tttt
+          to: $email
