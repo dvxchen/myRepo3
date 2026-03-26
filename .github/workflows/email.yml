@@ -1,14 +1,62 @@
-name: 发送邮件通知
+name: Cypress 测试 + 邮件通知(成功/失败/跳过统计)
 env:
   email: "AAAA"
 on:
   push:
-  workflow_dispatch: # 允许手动运行
+  workflow_dispatch:
 
 jobs:
-  send-email:
+  cypress-test:
     runs-on: ubuntu-latest
+    env:
+      GH_ACTOR: ${{ github.actor }}
+
     steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 安装依赖
+        run: npm install
+
+      - name: 运行 Cypress + 生成日志
+        id: cypress
+        run: |
+          # 运行并输出日志
+          npx cypress run --reporter json > cypress-report.json 2>&1 || true
+          cat cypress-report.json > cypress-output.log
+
+      - name: 解析 Cypress 统计结果
+        id: parse
+        run: |
+          # 统计用例数量
+          PASSED=$(jq '.stats.passed' cypress-report.json)
+          FAILED=$(jq '.stats.failed' cypress-report.json)
+          SKIPPED=$(jq '.stats.skipped' cypress-report.json)
+          TOTAL=$(jq '.stats.tests' cypress-report.json)
+          STATUS=$([[ $FAILED -gt 0 ]] && echo "失败" || echo "成功")
+
+          # 处理用户名 davyATchen → davy.chen
+          ORIGIN=${{ github.actor }}
+          SAFE_USER=${ORIGIN//AT/.}
+
+          # 错误日志（最后50行）
+          ERROR_LOG=$(tail -n 50 cypress-output.log)
+          ERROR_LOG="${ERROR_LOG//$'\n'/'%0A'}"
+
+          # 写入环境变量
+          echo "STATUS=$STATUS" >> $GITHUB_ENV
+          echo "PASSED=$PASSED" >> $GITHUB_ENV
+          echo "FAILED=$FAILED" >> $GITHUB_ENV
+          echo "SKIPPED=$SKIPPED" >> $GITHUB_ENV
+          echo "TOTAL=$TOTAL" >> $GITHUB_ENV
+          echo "SAFE_USER=$SAFE_USER" >> $GITHUB_ENV
+          echo "ERROR_LOG=$ERROR_LOG" >> $GITHUB_ENV
+
       - name: 获取当前用户的邮箱
         id: get-email
         run: |
@@ -21,21 +69,28 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
      
 
-      - name: 发送邮件
+
+      - name: 发送邮件通知
         uses: dawidd6/action-send-mail@v3
         with:
-          # 发件邮箱配置
           server_address: smtp.163.com
           server_port: 465
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
-          
-          # 邮件内容
-          subject: GitHub 自动通知
+          subject: "Cypress 测试 ${{ env.STATUS }} | 用户: ${{ env.SAFE_USER }}"
           body: |
-            操作人：${{ github.actor }}
-            触发事件：${{ github.event_name }}
-            仓库：${{ github.repository }}
+            👤 操作人：${{ env.SAFE_USER }}
+            📦 仓库：${{ github.repository }}
+            🧪 触发事件：${{ github.event_name }}
+
+            ==============================================
+            ✅ 成功：${{ env.PASSED }} 条
+            ❌ 失败：${{ env.FAILED }} 条
+            ⏭️ 跳过：${{ env.SKIPPED }} 条
+            📊 总计：${{ env.TOTAL }} 条
+            ==============================================
+
+            📝 最新日志(最后50行)：
+            ${{ env.ERROR_LOG }}
           from: GitHub Actions
-          # 收件人（自动获取的用户邮箱）
           to: ${{ env.email }}
