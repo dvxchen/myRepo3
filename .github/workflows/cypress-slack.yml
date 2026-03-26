@@ -48,11 +48,6 @@ jobs:
       # ✅ 修复：无论成功失败都发邮件
       # =============================================
       - name: 发送测试结果邮件
-        run: |
-         # 获取 github.actor 并把 AT 替换成 .
-          USERNAME="${{ github.actor }}"
-          FIXED_USER="${USERNAME//AT/.}"
-          
         if: always()  # 👈 关键在这里！
         uses: dawidd6/action-send-mail@v3
         with:
