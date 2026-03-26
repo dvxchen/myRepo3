@@ -47,6 +47,8 @@ jobs:
           echo $email
           echo "email=$email" >> $GITHUB_ENV
           echo ${{ env.email }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # =============================================
       # ✅ 修复：无论成功失败都发邮件
       # =============================================
