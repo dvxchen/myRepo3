@@ -59,23 +59,6 @@ jobs:
           TOTAL=$(jq '.stats.tests // 0' cypress-report.json)
           STATUS=$([ "$FAILED" -gt 0 ] && echo "失败" || echo "成功")
 
-          # 处理用户名 davyATchen → davy.chen
-          USER=${{ github.actor }}
-          SAFE_USER=${USER//AT/.}
-
-          # 日志后50行
-          LOG=$(tail -n 60 cypress-report.json | tr -d '"')
-          LOG="${LOG//$'\n'/'%0A'}"
-
-          # 写入环境变量
-          echo "PASSED=$PASSED" >> $GITHUB_ENV
-          echo "FAILED=$FAILED" >> $GITHUB_ENV
-          echo "SKIPPED=$SKIPPED" >> $GITHUB_ENV
-          echo "TOTAL=$TOTAL" >> $GITHUB_ENV
-          echo "STATUS=$STATUS" >> $GITHUB_ENV
-          echo "SAFE_USER=$SAFE_USER" >> $GITHUB_ENV
-          echo "LOG=$LOG" >> $GITHUB_ENV
-
           
       - name: 获取当前用户的邮箱
         id: get-email
