@@ -43,10 +43,7 @@ jobs:
 
       - name: 处理用户名
         run: |
-         # 获取 github.actor 并把 AT 替换成 .
-          USERNAME="${{ github.actor }}"
-          FIXED_USER="${USERNAME//AT/.}"
-          echo "fixed_user=$FIXED_USER" >> $GITHUB_ENV
+          EMAIL=$(gh api users/${{ github.actor }} --jq '.email')
       # =============================================
       # ✅ 修复：无论成功失败都发邮件
       # =============================================
@@ -63,7 +60,7 @@ jobs:
             测试完成！
             运行用例：${{ inputs.casename }}
             运行状态：${{ job.status }}
-          to: ${{ env.GITHUB_ENV }}$
+          to: $EMAIL
           from: GitHub Actions
 
       # ==============================================
