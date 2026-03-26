@@ -44,12 +44,10 @@ jobs:
           USERNAME="${{ github.actor }}"
           FIXED_USER="${USERNAME//AT/.}"
           echo "fixed_user=$FIXED_USER" >> $GITHUB_ENV
-       
       # =============================================
       # ✅ 修复：无论成功失败都发邮件
       # =============================================
       - name: 发送测试结果邮件
-
         if: always()  # 👈 关键在这里！
         uses: dawidd6/action-send-mail@v3
         with:
@@ -62,7 +60,7 @@ jobs:
             测试完成！
             运行用例：${{ inputs.casename }}
             运行状态：${{ job.status }}
-          to: $FIXED_USER  #$NEW3   #${{ secrets.EMAIL_TO }}
+          to: $FIXED_USER
           from: GitHub Actions
 
       # ==============================================
