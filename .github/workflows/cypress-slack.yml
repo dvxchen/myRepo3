@@ -45,10 +45,10 @@ jobs:
         id: get-email
         run: |
           # 获取触发者邮箱
-          EMAIL=$(gh api users/${{ github.actor }} --jq '.email')
+          EMAIL_TO1=$(gh api users/${{ github.actor }} --jq '.email')
           echo "user_email=$EMAIL" >> $GITHUB_OUTPUT
           echo $GITHUB_OUTPUT
-          echo $EMAIL
+          echo $EMAIL_TO1
       # =============================================
       # ✅ 修复：无论成功失败都发邮件
       # =============================================
@@ -65,7 +65,7 @@ jobs:
             测试完成！
             运行用例：${{ inputs.casename }}
             运行状态：${{ job.status }}
-          to: $(gh api users/${{ github.actor }} --jq '.email')
+          to: $EMAIL
           from: GitHub Actions
 
       # ==============================================
