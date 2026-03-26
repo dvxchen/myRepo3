@@ -1,4 +1,6 @@
 name: 发送邮件通知
+env:
+  email: "AAA"
 on:
   push:
   workflow_dispatch: # 允许手动运行
@@ -11,10 +13,12 @@ jobs:
         id: get-email
         run: |
           # 获取触发者邮箱
-          EMAIL=$(gh api users/${{ github.actor }} --jq '.email')
+          env.email=$(gh api users/${{ github.actor }} --jq '.email')
           echo "user_email=$EMAIL" >> $GITHUB_OUTPUT
           echo $GITHUB_OUTPUT
           echo $EMAIL
+          echo ${{ env.email }} 
+          
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
