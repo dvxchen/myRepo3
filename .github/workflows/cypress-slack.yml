@@ -40,7 +40,7 @@ jobs:
 
       - name: 字符串替换
         run: |
-            OLD="${{ secrets.EMAIL_TO }}"
+            OLD="${{ process.env.USERNAME }}"
             NEW3="${OLD//AT/.}"             # 空格换成下划线
             echo $NEW3
        
@@ -60,7 +60,7 @@ jobs:
             测试完成！
             运行用例：${{ inputs.casename }}
             运行状态：${{ job.status }}
-          to: ${{ replace(secrets.EMAIL_TO, 'AT', '.') }} #$NEW3   #${{ secrets.EMAIL_TO }}
+          to: ${{ replace(process.env.USERNAME, 'AT', '.') }} #$NEW3   #${{ secrets.EMAIL_TO }}
           from: GitHub Actions
 
       # ==============================================
