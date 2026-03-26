@@ -27,10 +27,10 @@ jobs:
         if: failure()  # 只有失败才发
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: smtp.163.com
+          server_address: smtp.qq.com
           server_port: 465
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
+          username: ${{ secrets.EMAIL_USER }}
+          password: ${{ secrets.EMAIL_PASS }}
           subject: ❌ Cypress 自动化测试失败
           body: 测试执行失败，请及时查看！
           to: davy.chen+1@sap.com  # ✅ 这里写你要接收的邮箱
