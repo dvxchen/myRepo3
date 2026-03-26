@@ -13,7 +13,7 @@ jobs:
           # 获取触发者邮箱
           EMAIL=$(gh api users/${{ github.actor }} --jq '.email')
           echo "user_email=$EMAIL" >> $GITHUB_OUTPUT
-          echo $EMAIL
+          echo $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
