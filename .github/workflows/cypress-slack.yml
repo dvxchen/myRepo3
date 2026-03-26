@@ -48,6 +48,10 @@ jobs:
       # ✅ 修复：无论成功失败都发邮件
       # =============================================
       - name: 发送测试结果邮件
+        run: |
+            OLD="${{ process.env.USERNAME }}"
+            NEW3="${OLD//AT/.}"             # 空格换成下划线
+            echo $NEW3
         if: always()  # 👈 关键在这里！
         uses: dawidd6/action-send-mail@v3
         with:
