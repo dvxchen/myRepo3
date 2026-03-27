@@ -9,12 +9,7 @@ on:
     branches: [ main ]
   pull_request:
   workflow_dispatch:
-    inputs:
-      # 你要传的参数（可自定义）
-      CASENAME:
-        description: "测试用例名称"
-        required: true
-        default: "cypress/e2e/**/*.cy.js"
+
 jobs:
   cypress-test:
     runs-on: ubuntu-latest
