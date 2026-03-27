@@ -1,4 +1,4 @@
-name: Auto: Cypress E2E + email+ lack
+name: Auto Cypress E2E + email+ lack
 env:
   email: "AAAA"
 on:
