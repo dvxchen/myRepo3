@@ -1,10 +1,10 @@
-name: Auto Cypress E2E + email+ lack
+name: Auto Cypress E2E + email+ slack
 env:
   email: "AAAA"
 on:
   schedule:
     # 每天 UTC 00:00 运行（北京时间 16:00）
-    - cron: '20 14 * * *'
+    - cron: '40 14 * * *'
   push:
     branches: [ main ]
   pull_request:
