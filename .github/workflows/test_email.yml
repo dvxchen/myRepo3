@@ -1,4 +1,4 @@
-name: CI Notify
+name: test email
 
 on:
   push:
