@@ -40,7 +40,7 @@ jobs:
           browser: chrome
         env:
           CI: true
-          CYPRESS_CASENAME: ${{ inputs.casename }}
+          CYPRESS_CASENAME: "cypress/e2e/**/*.cy.js" # ${{ inputs.casename }}
 
       # ==================== 日志输出 + 统计 ====================
       - name: 生成 Cypress 报告与日志
