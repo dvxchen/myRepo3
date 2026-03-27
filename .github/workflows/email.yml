@@ -42,5 +42,5 @@ jobs:
             运行链接：https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
           # 发件人 & 收件人
-          from: GitHub CI Bot <ci-bot@example.com>
+          from: GitHub Actions
           to: davy.chen@sap.com # 可写任意多个邮箱
