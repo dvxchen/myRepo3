@@ -1,0 +1,122 @@
+name: Auto: Cypress E2E + email+ lack
+env:
+  email: "AAAA"
+on:
+  schedule:
+    # 每天 UTC 00:00 运行（北京时间 16:00）
+    - cron: '20 14 * * *'
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      # 你要传的参数（可自定义）
+      CASENAME:
+        description: "测试用例名称"
+        required: true
+        default: "cypress/e2e/**/*.cy.js"
+jobs:
+  cypress-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 使用 Node.js 环境
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # 关键修复：用 npm install 代替 npm ci，彻底解决 lockfile 报错
+      - name: Install dependencies
+        run: npm install
+
+      # 运行 Cypress 测试
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+        env:
+          CI: true
+          CYPRESS_CASENAME: "cypress/e2e/**/*.cy.js" # ${{ inputs.casename }}
+
+      # ==================== 日志输出 + 统计 ====================
+      - name: 生成 Cypress 报告与日志
+        if: always()
+        run: |
+          # 生成 JSON 报告（统计用）
+          npx cypress run --reporter json > cypress-report.json 2>&1 || true
+          # 输出日志到控制台
+          cat cypress-report.json
+
+      # ==================== 解析成功/失败/跳过 ====================
+      - name: 解析测试统计
+        if: always()
+        id: parse
+        run: |
+          PASSED=$(jq -r '.stats.passed // 0' test-results.json 2>/dev/null || echo 0)
+          FAILED=$(jq -r '.stats.failed // 0' test-results.json 2>/dev/null || echo 0)
+          SKIPPED=$(jq -r '.stats.skipped // 0' test-results.json 2>/dev/null || echo 0)
+          TOTAL=$(jq -r '.stats.tests // 0' test-results.json 2>/dev/null || echo 0)
+          STATUS=$([ "$FAILED" -gt 0 ] && echo "失败" || echo "成功")
+
+          # 写入环境变量
+         
+          echo "STATUS=$STATUS" >> $GITHUB_ENV
+          echo "PASSED=$PASSED" >> $GITHUB_ENV
+          echo "FAILED=$FAILED" >> $GITHUB_ENV
+          echo "SKIPPED=$SKIPPED" >> $GITHUB_ENV
+          echo "TOTAL=$TOTAL" >> $GITHUB_ENV
+          echo $PASSED $FAILED $SKIPPED $TOTAL
+ 
+      - name: 获取当前用户的邮箱
+        id: get-email
+        run: |
+          # 获取触发者邮箱
+          email=$(gh api users/${{ github.actor }} --jq '.email')
+          echo $email
+          echo "email=$email" >> $GITHUB_ENV
+          echo ${{ env.email }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # =============================================
+      # ✅ 修复：无论成功失败都发邮件
+      # =============================================
+      - name: 发送测试结果邮件
+        if: always()  # 👈 关键在这里！
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.qq.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USER }}
+          password: ${{ secrets.EMAIL_PASS }}
+          subject: 自动化 Cypress 测试结果 ${{ job.status }}
+          body: |
+            测试完成！
+            运行用例：${{ inputs.casename }}
+            运行状态：${{ job.status }}
+          to: ${{ secrets.EMAIL_TO }} # ${{ env.email }}
+          from: GitHub Actions
+          # 重点：HTML格式 + 可点击链接
+          html_body: |
+            <h3>Cypress 自动化测试执行结果 ${{ job.status }}</h3>
+            <p>请点击下方链接查看详细日志：</p>
+            <p><a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">
+            查看 GitHub Actions 运行结果
+            </a></p>
+      # ==============================================
+      # 自动发送测试结果到 Slack（成功/失败都会发）
+      # ==============================================
+      - name: Send result to Slack
+        if: always()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "🧪 Cypress 自动化测试完成\n\n📦 项目：${{ github.repository }}\n👤 操作者：${{ github.actor }}\n✅ 状态：${{ job.status }}\n🔗 查看日志：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
