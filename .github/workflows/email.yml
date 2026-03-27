@@ -1,37 +1,46 @@
-name: Cypress 定时运行 + 失败发邮件
+name: CI Notify
+
 on:
-  schedule:
-    - cron: '0 0 * * *'  # 每天北京时间 08:00
-  workflow_dispatch:     # 允许手动运行
+  push:
+  pull_request:
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: 安装 Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+      # 你的构建/测试命令
+      - name: Run tests
+        run: |
+          echo "Running tests..."
+          exit 1  # 打开这行模拟失败
 
-      - name: 安装依赖 & 运行 Cypress
-        uses: cypress-io/github-action@v6
-        with:
-          command: npx cypress run
-        env:
-          CI: true
-
-      # 👇 核心：执行失败时发送邮件到你指定的邮箱
-      - name: 发送失败通知
-        if: failure()  # 只有失败才发
+  notify:
+    needs: build
+    if: always() # 无论成功/失败/取消都执行
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send status email
         uses: dawidd6/action-send-mail@v3
         with:
+          # SMTP 配置
           server_address: smtp.qq.com
           server_port: 465
           username: ${{ secrets.EMAIL_USER }}
-          password: ${{ secrets.EMAIL_PASS }}
-          subject: ❌ Cypress 自动化测试失败
-          body: 测试执行失败，请及时查看！
-          to: davy.chen+1@sap.com  # ✅ 这里写你要接收的邮箱
-          from: GitHub Actions Bot
+          password: ${{ secrets.EMAIL_PASS }} # QQ邮箱用授权码
+
+          # 邮件内容
+          subject: |
+            ${{ job.status == 'success' && '✅' || '' }} CI ${{ job.status }}: ${{ github.repository }}
+          body: |
+            CI 执行结果：${{ job.status }}
+            仓库：${{ github.repository }}
+            分支：${{ github.ref }}
+            触发人：${{ github.actor }}
+            运行链接：https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          # 发件人 & 收件人
+          from: GitHub CI Bot <ci-bot@example.com>
+          to: davy.chen@sap.com # 可写任意多个邮箱
