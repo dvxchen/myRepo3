@@ -4,7 +4,7 @@ env:
 on:
   schedule:
     # 每天 UTC 00:00 运行（北京时间 16:00）
-    - cron: ${{ secrets.SCHEDULE }}
+    - cron: '20 15 * * *'     #${{ secrets.SCHEDULE }}
   push:
     branches: [ main ]
   pull_request:
