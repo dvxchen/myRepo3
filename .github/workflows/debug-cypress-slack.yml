@@ -1,10 +1,8 @@
-name: Cypress E2E + Slack Notify
+name: Debug Cypress E2E + email+ Slack 
 env:
   email: "AAAA"
 on:
-  schedule:
-    # 每天 UTC 00:00 运行（北京时间 16:00）
-    - cron: '20 14 * * *'
+
   push:
     branches: [ main ]
   pull_request:
@@ -40,7 +38,7 @@ jobs:
           browser: chrome
         env:
           CI: true
-          CYPRESS_CASENAME: "cypress/e2e/**/*.cy.js" # ${{ inputs.casename }}
+          CYPRESS_CASENAME: ${{ inputs.casename }}
 
       # ==================== 日志输出 + 统计 ====================
       - name: 生成 Cypress 报告与日志
@@ -97,7 +95,7 @@ jobs:
             测试完成！
             运行用例：${{ inputs.casename }}
             运行状态：${{ job.status }}
-          to: ${{ secrets.EMAIL_TO }} # ${{ env.email }}
+          to: ${{ env.email }}
           from: GitHub Actions
           # 重点：HTML格式 + 可点击链接
           html_body: |
