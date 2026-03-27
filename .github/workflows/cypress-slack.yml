@@ -4,7 +4,7 @@ env:
 on:
   schedule:
     # 每天 UTC 00:00 运行（北京时间 16:00）
-    - cron: '0 8 * * *'
+    - cron: '0 14 * * *'
   push:
     branches: [ main ]
   pull_request:
